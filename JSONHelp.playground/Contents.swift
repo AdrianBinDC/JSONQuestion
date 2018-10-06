@@ -10,14 +10,7 @@ import PlaygroundSupport
 struct Holiday: Codable {
     let responseCode, responseMsg: String
     let holidayCount: Int
-    let holidays: [HolidayElement]
-    
-    enum CodingKeys: String, CodingKey {
-        case responseCode = "response_code"
-        case responseMsg = "response_msg"
-        case holidayCount = "holiday_count"
-        case holidays
-    }
+    let holidays: [HolidayElement]    
 }
 struct HolidayElement: Codable {
     let month: String
@@ -81,7 +74,9 @@ let task = session.dataTask(with: urlRequest) { (data, response, error) in
     
     // parse the result as JSON, since that's what the API provides
     do {
-        let jsonResponse = try JSONDecoder().decode(Holiday.self, from: responseData)
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        let jsonResponse = try decoder.decode(Holiday.self, from: responseData)
         print(jsonResponse.holidays[0].details)
     } catch  {
         print("error trying to convert data to JSON")
